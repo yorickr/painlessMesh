@@ -231,7 +231,7 @@ void ICACHE_FLASH_ATTR StationScan::connectToAP() {
         } else {
             if (mesh->_station_got_ip) {
                 mesh->closeConnectionSTA();
-                task.enableDelayed(1000*SCAN_INTERVAL);
+                task.enableDelayed(SCAN_INTERVAL);
                 return;
             } else if (aps.empty() || 
                     !ssid.equals((char *)aps.begin()->ssid)) {
@@ -246,7 +246,7 @@ void ICACHE_FLASH_ATTR StationScan::connectToAP() {
         if (mesh->_station_got_ip) {
             // if already connected -> scan slow
             mesh->debugMsg(CONNECTION, "connectToAP(): Already connected, and no unknown nodes found: scan rate set to slow\n");
-            task.delay(random(25,36)*SCAN_INTERVAL);
+            task.delay(SCAN_INTERVAL);
         } else {
             // else scan fast (SCAN_INTERVAL)
             mesh->debugMsg(CONNECTION, "connectToAP(): No unknown nodes found scan rate set to normal\n");
@@ -265,9 +265,9 @@ void ICACHE_FLASH_ATTR StationScan::connectToAP() {
                 mesh->stability = 0; // Discourage switching again
                 // wifiEventCB should be triggered before this delay runs out
                 // and reset the connecting
-                task.delay(1000*SCAN_INTERVAL);
+                task.delay(SCAN_INTERVAL);
             } else {
-                task.delay(random(4,7)*SCAN_INTERVAL);
+                task.delay(SCAN_INTERVAL);
             }
         } else {
             // Else try to connect to first 
@@ -276,7 +276,7 @@ void ICACHE_FLASH_ATTR StationScan::connectToAP() {
             requestIP(ap);
             // Trying to connect, if that fails we will reconnect later
             mesh->debugMsg(CONNECTION, "connectToAP(): Trying to connect, scan rate set to 4*normal\n");
-            task.delay(4*SCAN_INTERVAL); 
+            task.delay(SCAN_INTERVAL); 
         }
     }
 }
