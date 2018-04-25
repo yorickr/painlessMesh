@@ -78,6 +78,8 @@ typedef std::function<void(uint32_t from, String &msg)> receivedCallback_t;
 typedef std::function<void()> changedConnectionsCallback_t;
 typedef std::function<void(int32_t offset)> nodeTimeAdjustedCallback_t;
 typedef std::function<void(uint32_t nodeId, int32_t delay)> nodeDelayCallback_t;
+typedef std::function<void(uint32_t measurement_time, std::list<wifi_ap_record_t> found_msmts)> scanCallback_t;
+
 
 class painlessMesh {
 public:
@@ -124,6 +126,8 @@ public:
         uint8_t * remote_ip = NULL);
     bool setHostname(const char * hostname);
     ip_addr getStationIP();
+
+    void                onScanCompleted(scanCallback_t onScanCompleted);
 
     StationScan stationScan;
 
@@ -194,6 +198,7 @@ protected:
     changedConnectionsCallback_t    changedConnectionsCallback;
     nodeTimeAdjustedCallback_t      nodeTimeAdjustedCallback;
     nodeDelayCallback_t             nodeDelayReceivedCallback;
+    scanCallback_t                  scanCompletedCallback;
 
     uint32_t          _nodeId;
     String            _meshSSID;

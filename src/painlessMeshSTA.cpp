@@ -123,6 +123,11 @@ void ICACHE_FLASH_ATTR StationScan::stationScan() {
         staticThis->debugMsg(ERROR, "wifi_station_scan() failed!?\n");
 }
 
+void ICACHE_FLASH_ATTR painlessMesh::onScanCompleted(scanCallback_t cb) {
+    debugMsg(GENERAL, "onScanCompleted():\n");
+    scanCompletedCallback = cb;
+}
+
 void ICACHE_FLASH_ATTR StationScan::scanComplete() {
     staticThis->debugMsg(CONNECTION, "scanComplete():-- > scan finished @ %u < --\n", staticThis->getNodeTime());
 
@@ -138,14 +143,21 @@ void ICACHE_FLASH_ATTR StationScan::scanComplete() {
     //records = (wifi_ap_record_t *)malloc(num*sizeof(wifi_ap_record_t));
     staticThis->debugMsg(CONNECTION, "scanComplete(): num=%d, err=%d\n", num, err);
     err = esp_wifi_scan_get_ap_records(&num, records);
+    std::list<wifi_ap_record_t> all_aps;
+
     staticThis->debugMsg(CONNECTION, "scanComplete(): After getting records, num=%d, err=%d\n", num, err);
     for (uint16_t i = 0; i < num; ++i) {
         aps.push_back(records[i]);
+        all_aps.push_back(records[i]);
         staticThis->debugMsg(CONNECTION, "\tfound : % s, % ddBm\n", (char*) records[i].ssid, (int16_t) records[i].rssi);
     }
     //delete[] records;
     free(records);
     staticThis->debugMsg(CONNECTION, "\tFound % d nodes\n", aps.size());
+
+    if (staticThis->scanCompletedCallback) {
+        staticThis->scanCompletedCallback(millis(), all_aps);
+    }
 
     task.yield([this]() {
         // Task filter all unknown
