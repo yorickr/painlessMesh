@@ -156,7 +156,7 @@ void ICACHE_FLASH_ATTR StationScan::scanComplete() {
     staticThis->debugMsg(CONNECTION, "\tFound % d nodes\n", aps.size());
 
     if (staticThis->scanCompletedCallback) {
-        staticThis->scanCompletedCallback(millis(), all_aps);
+        staticThis->scanCompletedCallback(staticThis->getNodeTime(), all_aps);
     }
 
     task.yield([this]() {
